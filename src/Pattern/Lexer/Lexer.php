@@ -14,7 +14,7 @@ class Lexer
 
     /**
      * @param  string         $pattern
-     * @return array
+     * @return Token[]
      * @throws LexerException
      */
     public function tokenize($pattern)
@@ -25,9 +25,9 @@ class Lexer
         while (isset($pattern[$offset])) {
             foreach ($this->tokenMap as $regex => $token) {
                 if (preg_match($regex, $pattern, $matches, null, $offset)) {
-                    $tokens[] = array(
+                    $tokens[] = new Token(
                         $token,
-                        $matches[0],
+                        $matches[0]
                     );
                     $offset += strlen($matches[0]);
                     continue 2;
