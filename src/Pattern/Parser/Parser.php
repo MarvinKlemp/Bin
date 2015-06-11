@@ -2,21 +2,35 @@
 
 namespace MarvinKlemp\Bin\Pattern\Parser;
 
-use MarvinKlemp\Bin\Pattern\BinaryPattern;
-use MarvinKlemp\Bin\Pattern\Lexer\Token;
+use MarvinKlemp\Bin\Binary;
+use MarvinKlemp\Bin\Pattern\Lexer\Lexer;
 use Symfony\Component\Yaml\Exception\ParseException;
 
 class Parser
 {
     /**
-     * @param  Token[]       $tokens
-     * @return BinaryPattern
+     * @var Lexer
      */
-    public function compile(array $tokens)
-    {
-        $pattern = new BinaryPattern();
+    protected $lexer;
 
+    /**
+     * @param Lexer $lexer
+     */
+    public function __construct(Lexer $lexer)
+    {
+        $this->lexer = $lexer;
+    }
+
+    /**
+     * @param  string $pattern
+     * @return Binary
+     */
+    public function parse($pattern)
+    {
+        $tokens = $this->lexer->tokenize($pattern);
+        $binary = new Binary();
         $i = 0;
+
         while (isset($tokens[$i])) {
             if ($tokens[$i]->type() == "T_WHITESPACE") {
                 $i = $i + 1;
@@ -49,10 +63,10 @@ class Parser
                 }
             }
 
-            $pattern->addField($tokens[$i]->value(), $tokens[$i+2]->value());
+            $binary->addField($tokens[$i]->value(), $tokens[$i+2]->value());
             $i = $i + 4;
         }
 
-        return $pattern;
+        return $binary;
     }
 }
